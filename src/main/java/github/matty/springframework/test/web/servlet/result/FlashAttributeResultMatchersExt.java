@@ -23,13 +23,29 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.FlashMap;
 
-import static org.springframework.test.util.AssertionErrors.assertEquals;
-import static org.springframework.test.util.AssertionErrors.assertNotNull;
+import static org.springframework.test.util.AssertionErrors.*;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 /**
  * Extensions for {@link FlashAttributeResultMatchers}.
  */
 public class FlashAttributeResultMatchersExt extends FlashAttributeResultMatchers {
+
+    /**
+     * Assert the flash map attribute has field error.
+     */
+    public ResultMatcher attributeHasFieldErrors(String name, String... fieldNames) {
+        return result -> {
+            FlashMap fm = getFlashMap(result);
+            Errors errors = getBindingResult(fm, name);
+
+            assertTrue("No errors for attribute '" + name + "'", errors.hasErrors());
+            for (String fieldName : fieldNames) {
+                boolean hasFieldErrors = errors.hasFieldErrors(fieldName);
+                assertTrue("No errors for field '" + fieldName + "' of attribute '" + name + "'", hasFieldErrors);
+            }
+        };
+    }
 
     /**
      * Assert the flash map attribute has errors.

@@ -55,6 +55,20 @@ public class FlashAttributeResultMatchersExtTest {
         assertThrows(AssertionError.class, () -> flashExt().attributeErrorCount("BindingResult", 0).match(mvcResult));
     }
 
+    @Test
+    void testAttributeFieldErrors() throws Exception {
+        when(bindingResult.hasFieldErrors("test_field")).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(true);
+        FlashMap fm = new FlashMap();
+        fm.put("BindingResult", bindingResult);
+
+        when(mvcResult.getFlashMap()).thenReturn(fm);
+
+        flashExt().attributeHasFieldErrors("BindingResult", "test_field").match(mvcResult);
+        assertThrows(AssertionError.class, () -> flashExt().attributeHasFieldErrors("BindingResult", "nomatch_field").match(mvcResult));
+
+    }
+
     /**
      * Flash map with errors.
      */
